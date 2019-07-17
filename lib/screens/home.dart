@@ -76,7 +76,7 @@ class _MapState extends State<Map> {
 
 
   //last location from map
-  LatLng _lastPostion = _initialPosition;
+  LatLng _lastPosition = _initialPosition;
 
   //here we'll define set of list object
   final Set<Marker> _markers = {};
@@ -145,6 +145,9 @@ class _MapState extends State<Map> {
 
           //
           onCameraMove: _onCameraMove,
+
+          //Here we'll display the line on the map
+          polylines: _polyLines,
 
         ),
 
@@ -319,6 +322,20 @@ class _MapState extends State<Map> {
 
               cursorColor: Colors.black,
 
+
+              controller: destinationController,
+
+
+              textInputAction: TextInputAction.go,
+
+
+              onSubmitted: (value){
+
+                sendRequest(value);
+
+              },
+
+
               decoration: InputDecoration(
 
 
@@ -428,7 +445,7 @@ class _MapState extends State<Map> {
 
     setState(() {
       
-      _lastPostion = position.target;
+      _lastPosition = position.target;
 
     });
 
@@ -437,7 +454,7 @@ class _MapState extends State<Map> {
 
 
   //------Here we'll add our Red Location Pin-----
-  void _onAddMarkerPressed(){
+  void _addMarker(LatLng location, String address){
 
     setState(() {
       
@@ -446,17 +463,17 @@ class _MapState extends State<Map> {
         Marker(markerId:  
         
 
-          MarkerId(_lastPostion.toString()),
+          MarkerId(_lastPosition.toString()),
 
           position: 
           
-            _lastPostion, 
+            location, 
             
             infoWindow: InfoWindow(
 
-              title: "remember here",
+              title: address,
 
-              snippet: "good place"
+              snippet: "go here"
 
             ),
 
@@ -472,6 +489,56 @@ class _MapState extends State<Map> {
   }
   //------------------PIN ENDS------------------------------
 
+
+
+
+  //-------"POLYLINES" TO DRAW PICKUP & DROP DESTINATION ROUTE LINE------
+
+  void createRoute(String encodedPoly){
+
+    setState(() {
+      
+
+      _polyLines.add(
+        
+
+        Polyline(
+          
+
+          polylineId: PolylineId(
+            
+            _lastPosition.toString(),
+
+          ),
+            
+
+          width: 10,
+
+          points: convertToLatLng(decodePoly(encodedPoly)),
+
+          color: Colors.black,
+
+        )
+        
+      );
+
+
+    });
+
+  }
+
+  //-------ENDS "POLYLINES" TO DRAW PICKUP & DROP DESTINATION ROUTE LINE------
+
+
+
+
+   /**
+     * 
+     * [212.332, 233.5, 2323.5, 5545.7, 4466.7, 4546.7, 4646.89, 40587.90]
+     * 
+     * (0---------1--------2-------3-------4--------5-------6----------7)
+     * 
+     */
 
 
 
@@ -496,18 +563,6 @@ class _MapState extends State<Map> {
 
 
   }
-
-
-
-    /**
-     * 
-     * [212.332, 233.5, 2323.5, 5545.7, 4466.7, 4546.7, 4646.89, 40587.90]
-     * 
-     * (0---------1--------2-------3-------4--------5-------6----------7)
-     * 
-     */
-
-
 
 
   //----------------DECODEPOLY which returns LIST of DOUBLES  Begins -----------------
@@ -578,16 +633,39 @@ class _MapState extends State<Map> {
     });
   }
   
-  // void sendRequest(String intendedLocation)async{
-  //   List<Placemark> placemark = await Geolocator().placemarkFromAddress(intendedLocation);
-  //   double latitude = placemark[0].position.latitude;
-  //   double longitude = placemark[0].position.longitude;
-  //   LatLng destination = LatLng(latitude, longitude);
-  //   _addMarker(destination, intendedLocation);
-  //   String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination);
-  //   createRoute(route);
+  //------Here below function is for when user type in setbox------
 
-  // }
+  void sendRequest(String intendedLocation)async{
+   
+
+    //Here 'Placemark' List type
+    List<Placemark> placemark = await Geolocator().placemarkFromAddress(intendedLocation);
+    
+
+    //'latitude' Variable
+    double latitude = placemark[0].position.latitude;
+    
+
+    //'longtitude' Variable
+    double longitude = placemark[0].position.longitude;
+    
+
+    //'destination' Object
+    LatLng destination = LatLng(latitude, longitude);
+   
+
+    //Here we'll pass our destination & pick up location
+    _addMarker(destination, intendedLocation);
+   
+
+    //Here 'route' object
+    String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination);
+   
+
+    //Here calling createRoute function from above
+    createRoute(route);
+
+  }
 
 
 }
