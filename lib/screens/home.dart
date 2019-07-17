@@ -106,33 +106,256 @@ class _MapState extends State<Map> {
         ),
 
 
+          //----------'PICK UP' LOCATION WIDGET START------
 
-        Positioned(
+           Positioned(
 
-          top: 40,
+          top: 50.0,
           
-          right: 10,
+          right: 15.0,
 
-          child: FloatingActionButton(
-
-            onPressed: _onAddMarkerPressed,
-
-            tooltip: 'add marker',
-
-            backgroundColor: Colors.black,
+          left: 15.0,
 
 
-            child: Icon(
+          child: Container(
+
+
+            height: 50.0,
+
+            width: double.infinity,
+
+
+            decoration: BoxDecoration(
+
+
+              borderRadius: BorderRadius.circular(3.0),
+
+              color: Colors.white,
+
+
+              boxShadow: [
+
+
+                BoxShadow(
+
+
+                  color: Colors.grey,
+
+                  offset: Offset(1.0, 5.0),
+
+                  blurRadius: 10,
+
+                  spreadRadius: 3,
+
+
+                )
+
+              ]
+
+            ),
+
+            
+            child: TextField(
+
               
-              Icons.add_location,
-              
-              color: white,
+              cursorColor: Colors.black,
+
+              decoration: InputDecoration(
+
+
+                icon: Container(
+                  
+                    
+                  width: 10.0,
+
+                  height: 10.0,
+
+
+                  margin: EdgeInsets.only(
+                    
+                    left: 20, 
+                    
+                    top: 5
+                  
+                  ),
+                  
+                
+                  child: Icon(
+                    
+                    Icons.location_on, 
+                    
+                    color: Colors.black
+                    
+                  ),
+
+          
+                ),
+
+
+                hintText: "pick up",
+
+                border: InputBorder.none,
+
+
+                contentPadding: EdgeInsets.only(
+                  
+                  left: 15.0, 
+                  
+                  top: 16.0
+                  
+                ),
+
+
+              ),
 
             ),
 
           ),
 
-        )
+        ),
+
+        //----------END 'PICK UP' LOCATION WIDGET ------
+
+
+
+        //---------- 'DESTINATION' LOCATION WIDGET START------
+
+
+        Positioned(
+
+          top: 105,
+          
+          right: 15.0,
+
+          left: 15.0,
+
+
+          child: Container(
+
+
+            height: 50.0,
+
+            width: double.infinity,
+
+
+            decoration: BoxDecoration(
+
+
+              borderRadius: BorderRadius.circular(3.0),
+
+              color: Colors.white,
+
+
+              boxShadow: [
+
+
+                BoxShadow(
+
+
+                  color: Colors.grey,
+
+                  offset: Offset(1.0, 5.0),
+
+                  blurRadius: 10,
+
+                  spreadRadius: 3,
+
+                )
+
+              ]
+
+            ),
+
+            
+
+            child: TextField(
+              
+
+              cursorColor: Colors.black,
+
+              decoration: InputDecoration(
+
+
+                icon: Container(
+                  
+
+                  width: 10.0,
+
+                  height: 10.0,
+
+
+                  margin: EdgeInsets.only(
+                    
+                    left: 20, 
+                    
+                    top: 5
+                  
+                  ),
+                  
+
+                  child: Icon(
+                    
+                    Icons.local_taxi, 
+                    
+                    color: Colors.black
+                    
+                  ),
+
+
+                ),
+
+
+                hintText: "destination?",
+
+                border: InputBorder.none,
+
+                contentPadding: EdgeInsets.only(
+                  
+                  left: 15.0, 
+                 
+                  top: 16.0
+                  
+                ),
+
+              ),
+
+            ),
+
+          ),
+
+        ),
+
+
+        //---------- END 'DESTINATION' LOCATION WIDGET ------
+
+
+
+        // Positioned(
+
+        //   top: 40,
+          
+        //   right: 10,
+
+        //   child: FloatingActionButton(
+
+        //     onPressed: _onAddMarkerPressed,
+
+        //     tooltip: 'add marker',
+
+        //     backgroundColor: Colors.black,
+
+
+        //     child: Icon(
+              
+        //       Icons.add_location,
+              
+        //       color: white,
+
+        //     ),
+
+        //   ),
+
+        // )
 
       ],
       
