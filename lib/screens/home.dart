@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_clone/utils/core.dart';
+import 'package:geolocator/geolocator.dart';
+import '../requests/google_maps_request.dart';
+
 
 
 class MyHomePage extends StatefulWidget {
@@ -46,14 +49,30 @@ class Map extends StatefulWidget {
 }
 
 
+
+
 class _MapState extends State<Map> {
 
 
   //#3 Here we'll define 'googlemapController'
   GoogleMapController mapController;
 
+
+  //Google Map Services
+  GoogleMapsServices _googleMapsServices = GoogleMapsServices();
+
+
+  //Text Editing Pick up Location Controller 
+  TextEditingController locationController = TextEditingController();
+
+
+  //Text Editing DestinationLocation Controller 
+  TextEditingController destinationController = TextEditingController();
+
+
+
   //current location from map
-  static const _initialPosition = LatLng(41.05, 73.53);
+  static LatLng _initialPosition;
 
 
   //last location from map
@@ -62,12 +81,36 @@ class _MapState extends State<Map> {
   //here we'll define set of list object
   final Set<Marker> _markers = {};
 
+  //Here 'Polyline' does draw from pick up to Destination Line draw
+  final Set<Polyline> _polyLines = {};
+
+
+
+  //Here we'll override our initial state
+  @override 
+  void initState(){
+
+    super.initState();
+
+    _getUserLocation();
+
+  }
+
+
 
 
   @override
   Widget build(BuildContext context) {
 
-    return Stack(
+    return _initialPosition == null? Container(
+
+
+      alignment: Alignment.center,
+
+      child: CircularProgressIndicator(),
+
+
+      ) : Stack(
 
       children: <Widget>[
 
@@ -159,6 +202,9 @@ class _MapState extends State<Map> {
 
               
               cursorColor: Colors.black,
+
+              //
+              controller: locationController,
 
               decoration: InputDecoration(
 
@@ -425,6 +471,125 @@ class _MapState extends State<Map> {
     
   }
   //------------------PIN ENDS------------------------------
+
+
+
+
+
+  //----------Here we'll convert List of Double into Latlng -----
+
+  List<LatLng> convertToLatLng(List points){
+
+    List<LatLng> result = <LatLng>[];
+
+      for(int i = 0; i < points.length; i++){
+
+        if(i % 2 != 0){
+
+          result.add(LatLng(points[i-1], points[i]));
+
+        }
+
+        return result;
+
+      } 
+
+
+  }
+
+
+
+    /**
+     * 
+     * [212.332, 233.5, 2323.5, 5545.7, 4466.7, 4546.7, 4646.89, 40587.90]
+     * 
+     * (0---------1--------2-------3-------4--------5-------6----------7)
+     * 
+     */
+
+
+
+
+  //----------------DECODEPOLY which returns LIST of DOUBLES  Begins -----------------
+
+  List decodePoly(String poly){
+    var list=poly.codeUnits;
+    var lList=new List();
+    int index=0;
+    int len= poly.length;
+    int c=0;
+    // repeating until all attributes are decoded
+    do
+    {
+      var shift=0;
+      int result=0;
+
+      // for decoding value of one attribute
+      do
+      {
+        c=list[index]-63;
+        result|=(c & 0x1F)<<(shift*5);
+        index++;
+        shift++;
+      }while(c>=32);
+      /* if value is negetive then bitwise not the value */
+      if(result & 1==1)
+      {
+        result=~result;
+      }
+      var result1 = (result >> 1) * 0.00001;
+      lList.add(result1);
+    }while(index<len);
+
+    /*adding to previous value as done in encoding */
+    for(var i=2;i<lList.length;i++)
+      lList[i]+=lList[i-2];
+
+    print(lList.toString());
+
+    return lList;
+  }
+
+  //------------------------- DECODEPOLY which returns LIST of DOUBLES  Ends  ----------------------
+
+
+
+
+  void _getUserLocation() async{
+
+    //Here we'll get the Current Location
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    
+
+    //Here Placemark List Variable
+    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+   
+
+
+    //
+    setState(() {
+      
+      //Here it'll get cordinates
+      _initialPosition = LatLng(position.latitude, position.longitude);
+      
+      //Here we'll get the above cordinate & translate to address type
+      locationController.text = placemark[0].name;
+   
+    });
+  }
+  
+  // void sendRequest(String intendedLocation)async{
+  //   List<Placemark> placemark = await Geolocator().placemarkFromAddress(intendedLocation);
+  //   double latitude = placemark[0].position.latitude;
+  //   double longitude = placemark[0].position.longitude;
+  //   LatLng destination = LatLng(latitude, longitude);
+  //   _addMarker(destination, intendedLocation);
+  //   String route = await _googleMapsServices.getRouteCoordinates(_initialPosition, destination);
+  //   createRoute(route);
+
+  // }
+
+
 }
 
 
