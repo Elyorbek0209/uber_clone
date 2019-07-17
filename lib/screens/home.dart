@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:uber_clone/utils/core.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -71,6 +71,7 @@ class _MapState extends State<Map> {
 
       children: <Widget>[
 
+
         //--------GOOGLE MAP OBJECT PROPERTIES ---------
 
         GoogleMap(
@@ -83,6 +84,7 @@ class _MapState extends State<Map> {
           
           ),
 
+
           //
           onMapCreated: onCreated,
 
@@ -93,14 +95,42 @@ class _MapState extends State<Map> {
           mapType: MapType.normal,
 
           //
+          compassEnabled: true,
+
+          //
           markers: _markers,
 
           //
           onCameraMove: _onCameraMove,
 
+        ),
 
 
 
+        Positioned(
+
+          top: 40,
+          
+          right: 10,
+
+          child: FloatingActionButton(
+
+            onPressed: _onAddMarkerPressed,
+
+            tooltip: 'add marker',
+
+            backgroundColor: Colors.black,
+
+
+            child: Icon(
+              
+              Icons.add_location,
+              
+              color: white,
+
+            ),
+
+          ),
 
         )
 
@@ -127,10 +157,51 @@ class _MapState extends State<Map> {
 
   void _onCameraMove(CameraPosition position){
 
+    setState(() {
+      
+      _lastPostion = position.target;
+
+    });
 
 
   }
 
+
+  //------Here we'll add our Red Location Pin-----
+  void _onAddMarkerPressed(){
+
+    setState(() {
+      
+      _markers.add(
+        
+        Marker(markerId:  
+        
+
+          MarkerId(_lastPostion.toString()),
+
+          position: 
+          
+            _lastPostion, 
+            
+            infoWindow: InfoWindow(
+
+              title: "remember here",
+
+              snippet: "good place"
+
+            ),
+
+              
+          icon: BitmapDescriptor.defaultMarker,
+        
+        ),
+
+      );
+
+    });
+    
+  }
+  //------------------PIN ENDS------------------------------
 }
 
 
